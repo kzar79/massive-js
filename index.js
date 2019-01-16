@@ -282,6 +282,7 @@ var walkSqlFiles = function(rootObject, rootDir) {
       rootObject[name] = function () {
         return _exec.invoke.apply(_exec, arguments);
       };
+      rootObject[name + "Sync"] = DA(rootObject[name]);
     } else if (ext === '') {
       //this is a directory so shift things and move on down
       //set a property on our root object, then use *that*
