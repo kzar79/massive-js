@@ -87,6 +87,8 @@ Massive.prototype.run = function(){
   this.query(args);
 };
 Massive.prototype.runSync = DA(Massive.prototype.run);
+Massive.prototype.runPromise = util.promisify(Massive.prototype.run);
+//Massive.prototype.runPromise = util.promisify(pgconn.partenzacorsa.insert.bind(pgconn.partenzacorsa));
 
 Massive.prototype.loadQueries = function() {
   walkSqlFiles(this, this.scriptsDir);
@@ -205,6 +207,7 @@ Massive.prototype.saveDoc = function(collection, doc, next){
   }
 };
 Massive.prototype.saveDocSync = DA(Massive.prototype.saveDoc);
+Massive.prototype.saveDocPromise = util.promisify(Massive.prototype.saveDoc);
 
 var MapToNamespace = function(entity, collection) {
   collection = collection || "tables";
@@ -283,6 +286,8 @@ var walkSqlFiles = function(rootObject, rootDir) {
         return _exec.invoke.apply(_exec, arguments);
       };
       rootObject[name + "Sync"] = DA(rootObject[name]);
+      rootObject[name + "Promise"] = util.promisify(rootObject[name].bind(rootObject));
+      //rootObject[name + "Promise"] = util.promisify(pgconn.partenzacorsa.insert.bind(pgconn.partenzacorsa));
     } else if (ext === '') {
       //this is a directory so shift things and move on down
       //set a property on our root object, then use *that*
@@ -377,5 +382,5 @@ exports.connect = function(args, next){
   });
 };
 
-exports.loadSync = DA(this.connect);
-exports.connectSync = DA(this.connect);
+exports.connectSync = exports.loadSync = DA(this.connect);
+exports.connectPromise = exports.loadPromise = util.promisify(this.connect.bind(this));
